@@ -90,21 +90,42 @@
     const yesBtn = document.getElementById("yesBtn");
     const success = document.getElementById("success");
 
+    function distance(x1, y1, x2, y2) {
+        return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
+    }
+
     function moveNoButton() {
         const card = document.querySelector(".card");
         const cardRect = card.getBoundingClientRect();
+        const yesRect = yesBtn.getBoundingClientRect();
 
-        const maxX = cardRect.width - noBtn.offsetWidth - 20;
-        const maxY = cardRect.height - noBtn.offsetHeight - 20;
+        const minDistance = 140; // how far No must stay from Yes
 
-        const randomX = Math.floor(Math.random() * maxX);
-        const randomY = Math.floor(Math.random() * maxY);
+        let randomX, randomY, tries = 0;
+
+        do {
+            const maxX = cardRect.width - noBtn.offsetWidth - 20;
+            const maxY = cardRect.height - noBtn.offsetHeight - 20;
+
+            randomX = Math.floor(Math.random() * maxX);
+            randomY = Math.floor(Math.random() * maxY);
+
+            tries++;
+            // Prevent infinite loop
+            if (tries > 50) break;
+
+        } while (
+            distance(
+                randomX, randomY,
+                yesRect.left - cardRect.left,
+                yesRect.top - cardRect.top
+            ) < minDistance
+        );
 
         noBtn.style.left = randomX + "px";
         noBtn.style.top = randomY + "px";
     }
 
-    // Works for both desktop hover and mobile touch
     noBtn.addEventListener("mouseover", moveNoButton);
     noBtn.addEventListener("touchstart", moveNoButton);
 
@@ -117,3 +138,4 @@
 
 </body>
 </html>
+
